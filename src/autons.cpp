@@ -43,26 +43,48 @@ void sawp() {
 
   chassis.pid_drive_set(-(24_in - MOGO_OFFSET), DRIVE_SPEED, true);
   chassis.pid_wait();
-
   clampCylinder.set_value(!clampCylinder.get_value());
-
   chassis.pid_turn_set(140_deg, TURN_SPEED, true);
+  pros::delay(225);
   intake.move_velocity(600);
+  pros::delay(100);
   chassis.pid_wait();
   chassis.pid_drive_set(30_in, DRIVE_SPEED, true);
-   chassis.pid_wait();
-  
+  chassis.pid_wait();
   chassis.pid_swing_set(LEFT_SWING, 100_deg, SWING_SPEED);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-7_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 30_deg, SWING_SPEED/2);
+  pros::delay(150);
+  chassis.pid_swing_set(RIGHT_SWING, 30_deg, SWING_SPEED/2.5);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(6_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
+  pros::delay(100);
   chassis.pid_swing_set(LEFT_SWING, 170_deg, SWING_SPEED);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(18_in, DRIVE_SPEED);
+  chassis.pid_drive_set(14_in, DRIVE_SPEED/4.5);
+  chassis.pid_wait_quick_chain();
+  pros::delay(450);
+  chassis.pid_drive_set(-5_in, DRIVE_SPEED/1.5);//intaking final ring on this side of the field
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_set(310_deg, TURN_SPEED, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 270_deg, SWING_SPEED, SWING_SPEED - SWING_SPEED/3.75);//first curve(wide)
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(LEFT_SWING, 360_deg, SWING_SPEED, SWING_SPEED/3.617);//second curve(tight)
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_set(135_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  chassis.pid_wait_quick_chain();//below this line is the section which isnt fully tuned
+  chassis.pid_turn_set(36.9_deg, TURN_SPEED);//turning towards 2nd mogo
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-9_in, DRIVE_SPEED);//fast approach
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-(14_in - MOGO_OFFSET), DRIVE_SPEED/4.5);//slowing down
+  chassis.pid_wait_quick_chain();
+  clampCylinder.set_value(!clampCylinder.get_value());//clamping on
 }
 
 ///
