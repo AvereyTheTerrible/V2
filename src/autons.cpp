@@ -5,23 +5,23 @@
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
-#define MOGO_OFFSET 3_in
+#define MOGO_OFFSET 1_in
 
 // These are out of 127
-const int DRIVE_SPEED = 110;
-const int TURN_SPEED = 90;
-const int SWING_SPEED = 90;
+const int DRIVE_SPEED = 127;
+const int TURN_SPEED = 100;
+const int SWING_SPEED = 127;
 
 ///
 // Constants
 ///
 void default_constants() {
-  chassis.pid_heading_constants_set(8, 0, 15);
-  chassis.pid_drive_constants_set(7, 0, 20);
-  chassis.pid_turn_constants_set(2, 0.05, 22, 15);
-  chassis.pid_swing_constants_set(6, 0, 65);
+  chassis.pid_heading_constants_set(5.5, 0, 50);
+  chassis.pid_drive_constants_set(6.5, 0, 20);
+  chassis.pid_turn_constants_set(2.5, 0.05, 22, 15);
+  chassis.pid_swing_constants_set(6, 0, 100);
 
-  chassis.pid_turn_exit_condition_set(80_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
+  chassis.pid_turn_exit_condition_set(80_ms, 5_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_swing_exit_condition_set(80_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(80_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
 
@@ -29,129 +29,166 @@ void default_constants() {
   chassis.pid_swing_chain_constant_set(5_deg);
   chassis.pid_drive_chain_constant_set(3_in);
 
-  chassis.slew_drive_constants_set(4_in, 30);
+  chassis.slew_drive_constants_set(4_in, 40);
 }
 
 ///
 // Drive Example
 ///
-void sawp() {
+void red_sawp() {
   // The first parameter is target inches
   // The second parameter is max speed the robot will drive at
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
 
-  chassis.pid_drive_set(-(24_in - MOGO_OFFSET), DRIVE_SPEED, true);
+  chassis.pid_drive_set(-24_in, DRIVE_SPEED, true);
   chassis.pid_wait();
   clampCylinder.set_value(!clampCylinder.get_value());
-  chassis.pid_turn_set(140_deg, TURN_SPEED, true);
-  pros::delay(225);
+  chassis.pid_turn_set(140_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  
   intake.move_velocity(600);
-  pros::delay(100);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(4_in, DRIVE_SPEED / 2);
   chassis.pid_wait();
-  chassis.pid_drive_set(30_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-  chassis.pid_swing_set(LEFT_SWING, 100_deg, SWING_SPEED);
+  chassis.pid_swing_set(LEFT_SWING, 100_deg, SWING_SPEED, 30);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-7_in, DRIVE_SPEED);
   chassis.pid_wait_quick_chain();
-  pros::delay(150);
-  chassis.pid_swing_set(RIGHT_SWING, 30_deg, SWING_SPEED/2.5);
+  chassis.pid_swing_set(RIGHT_SWING, 40, SWING_SPEED / 1.5, 20);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(6_in, DRIVE_SPEED);
+  chassis.pid_swing_set(LEFT_SWING, 120_deg, SWING_SPEED / 1.5, 25);
   chassis.pid_wait_quick_chain();
-  pros::delay(100);
-  chassis.pid_swing_set(LEFT_SWING, 170_deg, SWING_SPEED);
+  /*Schassis.pid_swing_set(LEFT_SWING, 180_deg, SWING_SPEED, 15);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(14_in, DRIVE_SPEED/4.5);
+  chassis.pid_drive_set(8_in, DRIVE_SPEED / 2);
+  chassis.pid_wait();*/
+  chassis.pid_swing_set(LEFT_SWING, 90, 127, 60);//first curve(wide)
   chassis.pid_wait_quick_chain();
-  pros::delay(450);
-  chassis.pid_drive_set(-5_in, DRIVE_SPEED/1.5);//intaking final ring on this side of the field
+  chassis.pid_drive_set(-50_in, DRIVE_SPEED, true);
   chassis.pid_wait_quick_chain();
-  chassis.pid_turn_set(310_deg, TURN_SPEED, true);
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 270_deg, SWING_SPEED, SWING_SPEED - SWING_SPEED/3.75);//first curve(wide)
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 360_deg, SWING_SPEED, SWING_SPEED/3.617);//second curve(tight)
-  chassis.pid_wait_quick_chain();
-  chassis.pid_turn_set(135_deg, TURN_SPEED);
-  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 180_deg, 127, 18);
+  
+  chassis.pid_wait();
   clampCylinder.set_value(!clampCylinder.get_value());
-  chassis.pid_wait_quick_chain();//below this line is the section which isnt fully tuned
-  chassis.pid_turn_set(36.9_deg, TURN_SPEED);//turning towards 2nd mogo
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-9_in, DRIVE_SPEED);//fast approach
+  chassis.pid_drive_set(-30_in, DRIVE_SPEED);
+  chassis.pid_wait();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  chassis.pid_turn_set(285_deg, TURN_SPEED);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-(14_in - MOGO_OFFSET), DRIVE_SPEED/4.5);//slowing down
+  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_turn_set(260_deg, TURN_SPEED);
   chassis.pid_wait_quick_chain();
-  clampCylinder.set_value(!clampCylinder.get_value());//clamping on
+  chassis.pid_drive_set(-45_in, DRIVE_SPEED / 2, true);
+}
+
+void blue_sawp() {
+  // The first parameter is target inches
+  // The second parameter is max speed the robot will drive at
+  // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
+  // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
+
+  chassis.pid_drive_set(-19_in, DRIVE_SPEED, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-3.5_in, DRIVE_SPEED / 2);
+  chassis.pid_wait();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  chassis.pid_turn_set(-140_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  
+  intake.move_velocity(600);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(4_in, DRIVE_SPEED / 2);
+  chassis.pid_wait();
+  chassis.pid_swing_set(RIGHT_SWING, -100_deg, SWING_SPEED, 30, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-7_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(LEFT_SWING, -40_deg, SWING_SPEED / 1.5, 40, true);
+  /*chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 180_deg, SWING_SPEED, 10);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(18_in, DRIVE_SPEED / 2);
+  chassis.pid_wait();*/
+
 }
 
 ///
 // Turn Example
 ///
-void turn_example() {
+void red_right_side() {
   // The first parameter is the target in degrees
   // The second parameter is max speed the robot will drive at
 
-  chassis.pid_turn_set(90_deg, TURN_SPEED);
+  chassis.pid_drive_set(-24_in, DRIVE_SPEED, true);
   chassis.pid_wait();
-
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(0_deg, TURN_SPEED);
-  chassis.pid_wait();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  intake.move_velocity(600);
+  pros::delay(300);
+  chassis.pid_turn_set(315_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(40_in, DRIVE_SPEED, true);
 }
 
 ///
 // Combining Turn + Drive
 ///
-void drive_and_turn() {
-  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(0_deg, TURN_SPEED);
-  chassis.pid_wait();
-
+void red_left_side() {
   chassis.pid_drive_set(-24_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  chassis.pid_turn_set(140_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  
+  intake.move_velocity(600);
+  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(4.5_in, DRIVE_SPEED / 2);
+  chassis.pid_wait();
+  chassis.pid_swing_set(LEFT_SWING, 100_deg, SWING_SPEED, 30);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-7_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 40, SWING_SPEED / 1.5, 20);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(LEFT_SWING, 120_deg, SWING_SPEED / 1.5, 25);
+  chassis.pid_wait_quick_chain();
+}
+
+void blue_left_side()
+{
+  chassis.pid_drive_set(-25_in, DRIVE_SPEED, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-3_in, DRIVE_SPEED / 2);
+  chassis.pid_wait();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  chassis.pid_turn_set(30_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(12_in, DRIVE_SPEED, true);
   chassis.pid_wait();
 }
 
 ///
 // Wait Until and Changing Max Speed
 ///
-void wait_until_change_speed() {
-  // pid_wait_until will wait until the robot gets to a desired position
-
-  // When the robot gets to 6 inches slowly, the robot will travel the remaining distance at full speed
-  chassis.pid_drive_set(24_in, 30, true);
-  chassis.pid_wait_until(6_in);
-  chassis.pid_speed_max_set(DRIVE_SPEED);  // After driving 6 inches at 30 speed, the robot will go the remaining distance at DRIVE_SPEED
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  chassis.pid_turn_set(-45_deg, TURN_SPEED);
-  chassis.pid_wait();
-
+void third_mogo_elim_red() {
+  chassis.pid_drive_set(-24_in, DRIVE_SPEED, true);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(LEFT_SWING, -45_deg, SWING_SPEED, 0);
+  chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
   chassis.pid_wait();
-
-  // When the robot gets to -6 inches slowly, the robot will travel the remaining distance at full speed
-  chassis.pid_drive_set(-24_in, 30, true);
-  chassis.pid_wait_until(-6_in);
-  chassis.pid_speed_max_set(DRIVE_SPEED);  // After driving 6 inches at 30 speed, the robot will go the remaining distance at DRIVE_SPEED
-  chassis.pid_wait();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  intake.move_velocity(600);
 }
-
 ///
 // Swing Example
 ///

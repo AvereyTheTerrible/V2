@@ -9,8 +9,9 @@
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
     {-10, -9, -8, -7},     // Left Chassis Ports (negative port will reverse it!)
-    {20, 19, 18, 17},  // Right Chassis Ports (negative port will reverse it!)
-
+    {20, 19, 18, 17},  // Right Chassis Ports (negative port will reverse it!)*/
+    /*{18, -5, 20},
+    {-6, -12, 11},*/
     2,      // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     450);   // Wheel RPM
@@ -29,7 +30,7 @@ void initialize() {
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(true);  // Enables modifying the controller curve with buttons on the joysticks
-  chassis.opcontrol_drive_activebrake_set(2);    // Sets the active brake kP. We recommend ~2.  0 will disable.
+  chassis.opcontrol_drive_activebrake_set(0);    // Sets the active brake kP. We recommend ~2.  0 will disable.
   chassis.opcontrol_curve_default_set(0, 0);     // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
   // Set the drive to your own constants from autons.cpp!
@@ -41,14 +42,12 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      Auton("Sawp :)\n\nFully secures autononomous win point.", sawp),
-      Auton("Example Turn\n\nTurn 3 times.", turn_example),
-      Auton("Drive and Turn\n\nDrive forward, turn, come back. ", drive_and_turn),
-      Auton("Drive and Turn\n\nSlow down during drive.", wait_until_change_speed),
-      Auton("Swing Example\n\nSwing in an 'S' curve", swing_example),
-      Auton("Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining),
-      Auton("Combine all 3 movements", combining_movements),
-      Auton("Interference\n\nAfter driving forward, robot performs differently if interfered or not.", interfered_example),
+      Auton("RED SAWP :)\n\nSolo's autononomous win point.", red_sawp),
+      Auton("RED Right Side\n\nScores one ring on MOGO and preps to clear positive. DOES NOT TOUCH", red_right_side),
+      Auton("RED Left Side \n\n Scores three mogos onto MOGO. DOES NOT TOUCH. ", red_left_side),
+      Auton("BLUE SAWP :)\n\nSolo's autononomous win point.", blue_sawp),
+      Auton("BLUE Left Side\n\nScores one ring on MOGO and preps to clear positive. DOES NOT TOUCH", blue_left_side),
+      Auton("RED Elim Third MOGO", third_mogo_elim_red)
   });
 
   // Initialize chassis and auton selector
@@ -139,7 +138,7 @@ void opcontrol() {
       chassis.pid_tuner_iterate();  // Allow PID Tuner to iterate
     }
 
-    // schassis.opcontrol_tank();  // Tank control
+    // chassis.opcontrol_tank();  // Tank control
     chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
     // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
     // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
@@ -157,6 +156,9 @@ void opcontrol() {
     
     if (master.get_digital_new_press(DIGITAL_Y))
       clampCylinder.set_value(!clampCylinder.get_value());
+
+    if (master.get_digital_new_press(DIGITAL_RIGHT))
+      sweeperCylinder.set_value(!sweeperCylinder.get_value());
 
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
