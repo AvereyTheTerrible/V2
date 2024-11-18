@@ -4,7 +4,7 @@
 
 extern Drive chassis;
 
-void red_sawp();
+void sawp();
 void blue_sawp();
 void red_right_side();
 void blue_right_side();

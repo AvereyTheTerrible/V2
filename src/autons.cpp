@@ -21,9 +21,9 @@ void default_constants() {
   chassis.pid_turn_constants_set(2.5, 0.05, 22, 15);
   chassis.pid_swing_constants_set(6, 0, 100);
 
-  chassis.pid_turn_exit_condition_set(80_ms, 5_deg, 250_ms, 7_deg, 500_ms, 500_ms);
-  chassis.pid_swing_exit_condition_set(80_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
-  chassis.pid_drive_exit_condition_set(80_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
+  chassis.pid_turn_exit_condition_set(40_ms, 5_deg, 250_ms, 7_deg, 500_ms, 500_ms);
+  chassis.pid_swing_exit_condition_set(40_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
+  chassis.pid_drive_exit_condition_set(40_ms, 2_in, 250_ms, 3_in, 500_ms, 500_ms);
 
   chassis.pid_turn_chain_constant_set(3_deg);
   chassis.pid_swing_chain_constant_set(5_deg);
@@ -34,36 +34,77 @@ void default_constants() {
 
 ///
 // Drive Example
-///
-void red_sawp() {
+/// standard sawp is red(multiplier is 1)
+void sawp() {
   // The first parameter is target inches
   // The second parameter is max speed the robot will drive at
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
 
-  chassis.pid_drive_set(-24_in, DRIVE_SPEED, true);
+  int multiplier = 1;
+
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);//approaching at full speed
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-4_in, DRIVE_SPEED/3, true);//slow approach to mogo
   chassis.pid_wait();
   clampCylinder.set_value(!clampCylinder.get_value());
-  chassis.pid_turn_set(140_deg, TURN_SPEED);
+  pros::delay(150);
+  chassis.pid_turn_set(140_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
   
-  intake.move_velocity(600);
-  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+  intake.move_velocity(600);//preload scored
+  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);//appraoching ring 1
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(4_in, DRIVE_SPEED / 2);
+  chassis.pid_drive_set(3_in, DRIVE_SPEED / 2.05);//slowing to prevent crossover while grabbing 1
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(LEFT_SWING, 100_deg * multiplier, SWING_SPEED, 30);//backing
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-7_in, DRIVE_SPEED);//reversing
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 40_deg * multiplier, SWING_SPEED / 1.5, 20);//1st curve segment towards ring 2
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(LEFT_SWING, 190_deg * multiplier, SWING_SPEED /1.5, 10);//2nd curve segment grabbing ring 2 and adjusing towards 3
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 172_deg * multiplier, SWING_SPEED/2.25, 13.5);//3rd curve segment grabbing ring 3
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(4.5_in, DRIVE_SPEED);//ensuring I grab
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-4.5_in, DRIVE_SPEED);//reversing
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(LEFT_SWING, 90_deg * multiplier, SWING_SPEED, 49);//wide curve to align for crossing field
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-42_in, DRIVE_SPEED, true);//crossing through
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 180_deg * multiplier, SWING_SPEED, 33);//curve to drop mogo and angle towards mogo 2
+  chassis.pid_wait_quick_chain();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  chassis.pid_turn_set(0_deg * multiplier, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-32_in, DRIVE_SPEED), true;//reversing
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-4.5_in, DRIVE_SPEED/3);//reversing
   chassis.pid_wait();
-  chassis.pid_swing_set(LEFT_SWING, 100_deg, SWING_SPEED, 30);
+  clampCylinder.set_value(!clampCylinder.get_value());
+  pros::delay(150);
+  chassis.pid_turn_set(-80_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-7_in, DRIVE_SPEED);
+  chassis.pid_drive_set(32_in, DRIVE_SPEED), true;
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 40, SWING_SPEED / 1.5, 20);
+  intake.move_velocity(0);// turn off to stop ring from getting jiggy wit it
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 120_deg, SWING_SPEED / 1.5, 25);
+  chassis.pid_turn_set(90_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
+  intake.move_velocity(600);// turn on to score
+  chassis.pid_drive_set(40_in, DRIVE_SPEED), true;
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(20_in, DRIVE_SPEED/2.5), true;
+  chassis.pid_wait_quick_chain();
+  
+
   /*Schassis.pid_swing_set(LEFT_SWING, 180_deg, SWING_SPEED, 15);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(8_in, DRIVE_SPEED / 2);
-  chassis.pid_wait();*/
+  chassis.pid_wait();
   chassis.pid_swing_set(LEFT_SWING, 90, 127, 60);//first curve(wide)
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-50_in, DRIVE_SPEED, true);
@@ -85,6 +126,7 @@ void red_sawp() {
   chassis.pid_turn_set(260_deg, TURN_SPEED);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-45_in, DRIVE_SPEED / 2, true);
+  */
 }
 
 void blue_sawp() {
