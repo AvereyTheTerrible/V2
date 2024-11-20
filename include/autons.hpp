@@ -4,8 +4,9 @@
 
 extern Drive chassis;
 
+
 void sawp();
-void blue_sawp();
+void six_ring();
 void red_right_side();
 void blue_right_side();
 void red_left_side();
@@ -18,3 +19,4 @@ void combining_movements();
 void interfered_example();
 
 void default_constants();
+void mogo_constants();

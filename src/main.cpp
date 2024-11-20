@@ -45,7 +45,7 @@ void initialize() {
       Auton("RED SAWP :)\n\nSolo's autononomous win point.", sawp),
       Auton("RED Right Side\n\nScores one ring on MOGO and preps to clear positive. DOES NOT TOUCH", red_right_side),
       Auton("RED Left Side \n\n Scores three mogos onto MOGO. DOES NOT TOUCH. ", red_left_side),
-      Auton("BLUE SAWP :)\n\nSolo's autononomous win point.", blue_sawp),
+      Auton("BLUE SAWP :)\n\nSolo's autononomous win point.", six_ring),
       Auton("BLUE Left Side\n\nScores one ring on MOGO and preps to clear positive. DOES NOT TOUCH", blue_left_side),
       Auton("RED Elim Third MOGO", third_mogo_elim_red)
   });
@@ -119,7 +119,7 @@ void opcontrol() {
   chassis.drive_brake_set(driver_preference_brake);
 
   while (true) {
-    
+  
     // PID Tuner
     // After you find values that you're happy with, you'll have to set them in auton.cpp
     if (!pros::competition::is_connected()) {
@@ -161,10 +161,11 @@ void opcontrol() {
     if (master.get_digital_new_press(DIGITAL_RIGHT))
       sweeperCylinder.set_value(!sweeperCylinder.get_value());
 
-  
-    //if(master.get_digital_new_press(DIGITAL_B)){
-      //sawp();
-    //}
+  /*
+    if(master.get_digital_new_press(DIGITAL_B)){
+      six_ring();
+    }
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+  */
   }
 }
