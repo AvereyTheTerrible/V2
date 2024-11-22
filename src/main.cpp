@@ -119,7 +119,7 @@ void opcontrol() {
   chassis.drive_brake_set(driver_preference_brake);
 
   while (true) {
-  
+    
     // PID Tuner
     // After you find values that you're happy with, you'll have to set them in auton.cpp
     if (!pros::competition::is_connected()) {
@@ -161,11 +161,11 @@ void opcontrol() {
     if (master.get_digital_new_press(DIGITAL_RIGHT))
       sweeperCylinder.set_value(!sweeperCylinder.get_value());
 
-  /*
+  
     if(master.get_digital_new_press(DIGITAL_B)){
       six_ring();
     }
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
-  */
+  
   }
 }
