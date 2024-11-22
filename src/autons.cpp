@@ -25,18 +25,18 @@ void default_constants() {
   chassis.pid_swing_exit_condition_set(35_ms, 3.5_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(40_ms, 2_in, 250_ms, 3_in, 500_ms, 500_ms);
 
-  chassis.pid_turn_chain_constant_set(3_deg);
-  chassis.pid_swing_chain_constant_set(5_deg);
-  chassis.pid_drive_chain_constant_set(3_in);
+  chassis.pid_turn_chain_constant_set(3.5_deg);
+  chassis.pid_swing_chain_constant_set(7_deg);
+  chassis.pid_drive_chain_constant_set(3.5_in);
 
   chassis.slew_drive_constants_set(4_in, 40);
 }
 
 void mogo_constants() {
   chassis.pid_heading_constants_set(7.5, 2, 50);
-  chassis.pid_drive_constants_set(7.5, 1.4, 23.0767);
+  chassis.pid_drive_constants_set(8, 1.4, 23.0767);
   chassis.pid_turn_constants_set(2.8, 0.05, 22, 15); 
-  chassis.pid_swing_constants_set(6, 0.8, 100);
+  chassis.pid_swing_constants_set(10, 0.8, 100);
 
 }
 
@@ -123,17 +123,17 @@ void six_ring() {
   chassis.pid_drive_set(-6_in, DRIVE_SPEED/1.75);//slow approach to mogo with 2 inches exccess
   chassis.pid_wait();
   clampCylinder.set_value(!clampCylinder.get_value());
-  pros::delay(150);//tune to see how low this can go without sacrificng consistency 
+  pros::delay(100);//tune to see how low this can go without sacrificng consistency 
   chassis.pid_drive_set(2_in, DRIVE_SPEED/3, true);//correcting by 2 inches excess
   chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(140_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(26.5_in, DRIVE_SPEED, true);//appraoching ring 1
+  chassis.pid_drive_set(27.5_in, DRIVE_SPEED, true);//appraoching ring 1
   intake.move_velocity(600);//preload scored
   chassis.pid_wait_quick_chain();
   pros::delay(150);
   chassis.pid_turn_set(120_deg * multiplier, TURN_SPEED);//angling around
-  pros::delay(400);
+  pros::delay(300);
   chassis.pid_swing_set(RIGHT_SWING, 85_deg * multiplier, SWING_SPEED/1.5, 30);//getting ring two
   chassis.pid_wait_quick_chain();
   chassis.pid_swing_set(RIGHT_SWING, -20_deg * multiplier, SWING_SPEED/1.5, 0);//anlging to ring three
@@ -141,93 +141,41 @@ void six_ring() {
   chassis.pid_swing_set(RIGHT_SWING, -50_deg * multiplier, SWING_SPEED/1.5, 20);//getting ring three
   chassis.pid_wait_quick_chain();
   mogo_constants();
-  chassis.pid_drive_set(1_in, DRIVE_SPEED, true);//failsafe to grabe ring 3
+  chassis.pid_drive_set(1_in, DRIVE_SPEED);//failsafe to grabe ring 3
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-1_in, DRIVE_SPEED, true);//returning to correct pos
+  chassis.pid_drive_set(-1_in, DRIVE_SPEED);//returning to correct pos
   chassis.pid_wait_quick_chain();
   chassis.pid_swing_set(RIGHT_SWING, -5_deg * multiplier, SWING_SPEED, 15);//turning away from blue stinky ring
   chassis.pid_wait_quick_chain();
   sweeperCylinder.set_value(!sweeperCylinder.get_value());
-  chassis.pid_drive_set(39_in, DRIVE_SPEED, true);//crossing
+  chassis.pid_drive_set(40_in, DRIVE_SPEED, true);//crossing
   chassis.pid_wait_quick_chain();
   chassis.pid_swing_set(LEFT_SWING, 65_deg * multiplier, SWING_SPEED, 12.5);//swinging into stack
-  pros::delay(300);
-  chassis.pid_swing_set(RIGHT_SWING, 90_deg * multiplier, SWING_SPEED, -63.5);//further spin
+  pros::delay(50);
+  chassis.pid_swing_set(RIGHT_SWING, 90_deg * multiplier, SWING_SPEED, -60);//further spin
   chassis.pid_wait_quick_chain();
   sweeperCylinder.set_value(!sweeperCylinder.get_value());
-  pros::delay(250);
-  chassis.pid_swing_set(RIGHT_SWING, 180_deg * multiplier, SWING_SPEED, 5);//swing away
+  pros::delay(50);
+  chassis.pid_swing_set(RIGHT_SWING, 160_deg * multiplier, SWING_SPEED, -50);//swing away
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 0_deg * multiplier, SWING_SPEED, 10);//reset with wall
+  chassis.pid_swing_set(LEFT_SWING, 90_deg * multiplier, SWING_SPEED, 10);//reset with wall
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(30_in, DRIVE_SPEED, true);//getting wall
-  pros::delay(1000);
-  chassis.pid_swing_set(LEFT_SWING, 0_deg * multiplier, SWING_SPEED, 30);//swinging back to face ring
+  chassis.pid_drive_set(23, DRIVE_SPEED, true);//getting wall
+  chassis.pid_wait_quick_chain();
+  mogo_constants();
+  chassis.pid_swing_set(LEFT_SWING, 0_deg * multiplier, SWING_SPEED, 35);//swinging back to face ring
   chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(-90_deg * multiplier, TURN_SPEED);//angling back to stack
   chassis.pid_wait_quick_chain();
   intakeCylinder.set_value(!intakeCylinder.get_value()); //raising intake
-  chassis.pid_drive_set(30_in, DRIVE_SPEED, true);//aproaching the stack/final ring
+  chassis.pid_drive_set(25_in, DRIVE_SPEED, true);//aproaching the stack/final ring
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(5.5_in, DRIVE_SPEED/2, true);//aproaching the stack/final ring
-  pros::delay(700);
-  intakeCylinder.set_value(!intakeCylinder.get_value()); //raising intak
+  chassis.pid_drive_set(5.5_in, DRIVE_SPEED/3, true);//aproaching the stack/final ring
+  intakeCylinder.set_value(!intakeCylinder.get_value()); //lowering intak
   chassis.pid_wait_quick_chain();
-  pros::delay(100);
   chassis.pid_drive_set(-3.5_in, DRIVE_SPEED, true);//pulling away so as to not intake the wrong ring
   chassis.pid_wait_quick_chain();
-  /*
-  chassis.pid_drive_set(39_in, DRIVE_SPEED, true);//appraoching stack in the corner
-  sweeperCylinder.set_value(!sweeperCylinder.get_value());
-  chassis.pid_wait_quick_chain();
-  chassis.pid_turn_set(45_deg * multiplier, TURN_SPEED);//angling around
-  chassis.pid_wait_quick_chain();
-  sweeperCylinder.set_value(!sweeperCylinder.get_value());
-  chassis.pid_drive_set(-3_in, DRIVE_SPEED);//reversing
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(12_in, DRIVE_SPEED, true);//getting ring 4
-
-  chassis.pid_swing_set(LEFT_SWING, 60_deg * multiplier, SWING_SPEED, 0);//breaken the stack
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 90_deg * multiplier, SWING_SPEED, 0);//finishing
-  sweeperCylinder.set_value(!sweeperCylinder.get_value());
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(3_in, DRIVE_SPEED, true);//getting ring 4
-  */
-  /*
-  chassis.pid_swing_set(LEFT_SWING, 90_deg * multiplier, SWING_SPEED, 14);//backup cruve
-  mogo_constants();
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(7_in, DRIVE_SPEED ,true);//moving up
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 170_deg * multiplier, SWING_SPEED/2, 3);//curve into ring 2
-  pros::delay(1500);
-  chassis.pid_swing_set(LEFT_SWING, 90_deg * multiplier, SWING_SPEED, 30);//reversing back
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 10_deg * multiplier, SWING_SPEED/1.25, 20);//getting ring three
-  pros::delay(5000);
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 20_deg * multiplier, SWING_SPEED, 95);//getting ring three
-  chassis.pid_wait_quick_chain();
-  sweeperCylinder.set_value(!sweeperCylinder.get_value());
-  chassis.pid_turn_set(90_deg * multiplier, TURN_SPEED);
-  chassis.pid_wait_quick_chain();
-  sweeperCylinder.set_value(!sweeperCylinder.get_value());
-  /*
-  chassis.pid_turn_set(260_deg * multiplier, TURN_SPEED);//flipn around
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 270_deg * multiplier, SWING_SPEED/2, 35);//second curve to set up THE NEEDLE THREAD(HIGHLY SENSITIVE)
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-14_in, DRIVE_SPEED / 1.5, true);//calm luh needle thread
-  pros::delay(0);//testing point
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 190_deg * multiplier, SWING_SPEED/2, 15);// curving in between rinngs and the wall
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 215_deg * multiplier, SWING_SPEED, 27.5);//curving away from stinky ring
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 165_deg * multiplier, SWING_SPEED/2, 5);//curving back the into chill, cool ring
-  chassis.pid_wait_quick_chain();
-  */
+  pros::delay(2000);
 }
 
 ///
