@@ -40,14 +40,16 @@ void initialize() {
   // chassis.opcontrol_curve_buttons_left_set(pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT);  // If using tank, only the left side is used.
   // chassis.opcontrol_curve_buttons_right_set(pros::E_CONTROLLER_DIGITAL_Y, pros::E_CONTROLLER_DIGITAL_A);
 
-  // Autonomous Selector using LLEMU
+  // Autonomous Selector using LLEMU blue_six_ring()
   ez::as::auton_selector.autons_add({
-      Auton("RED SAWP :)\n\nSolo's autononomous win point.", sawp),
-      Auton("RED Right Side\n\nScores one ring on MOGO and preps to clear positive. DOES NOT TOUCH", red_right_side),
-      Auton("RED Left Side \n\n Scores three mogos onto MOGO. DOES NOT TOUCH. ", red_left_side),
-      Auton("BLUE SAWP :)\n\nSolo's autononomous win point.", six_ring),
-      Auton("BLUE Left Side\n\nScores one ring on MOGO and preps to clear positive. DOES NOT TOUCH", blue_left_side),
-      Auton("RED Elim Third MOGO", third_mogo_elim_red)
+      Auton("RED MOGO disrupt\n\nRED - disrupts the thirds mogo and scores 3 -save until elims-", red_mogo_disrupt),
+      Auton("RED SIX RING :)\n\nRED - Gets six ring(hopefully)", red_six_ring),
+      Auton("RED MIN SAWP :)\n\n RED MIN - Solo's autononomous win point.", red_sawp_minimized),
+      Auton("BLUE SAWP :)\n\nBLUE - Solo's autononomous win point.", blue_sawp),
+      Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
+      Auton("BLUE SIX RING :)\n\nBLUE - Gets six ring(hopefully)", blue_six_ring),
+      Auton("BLUE MOGO disrupt\n\nBLUE - disrupts the thirds mogo and scores 3 -save until elims-", blue_mogo_disrupt)
+
   });
 
   // Initialize chassis and auton selector
@@ -161,9 +163,11 @@ void opcontrol() {
     if (master.get_digital_new_press(DIGITAL_RIGHT))
       sweeperCylinder.set_value(!sweeperCylinder.get_value());
 
+    if (master.get_digital_new_press(DIGITAL_A))
+      intakeCylinder.set_value(!intakeCylinder.get_value());
   
     if(master.get_digital_new_press(DIGITAL_B)){
-      six_ring();
+      //sawp                                                                                                                               ();
     }
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   

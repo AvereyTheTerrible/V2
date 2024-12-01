@@ -4,13 +4,17 @@
 
 extern Drive chassis;
 
+void red_sawp_minimized();
 
-void sawp();
-void six_ring();
-void red_right_side();
-void blue_right_side();
-void red_left_side();
-void blue_left_side();
+void blue_sawp();
+void red_sawp();
+
+void blue_six_ring();
+void red_six_ring();
+
+void blue_mogo_disrupt();
+void red_mogo_disrupt();
+
 void wait_until_change_speed();
 void third_mogo_elim_red();
 void swing_example();
