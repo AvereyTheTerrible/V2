@@ -42,11 +42,11 @@ void initialize() {
 
   // Autonomous Selector using LLEMU blue_six_ring()
   ez::as::auton_selector.autons_add({
-      Auton("RED MOGO disrupt\n\nRED - disrupts the thirds mogo and scores 3 -save until elims-", red_mogo_disrupt),
+      Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
       Auton("RED SIX RING :)\n\nRED - Gets six ring(hopefully)", red_six_ring),
+      Auton("RED MOGO disrupt\n\nRED - disrupts the thirds mogo and scores 3 -save until elims-", red_mogo_disrupt),
       Auton("RED MIN SAWP :)\n\n RED MIN - Solo's autononomous win point.", red_sawp_minimized),
       Auton("BLUE SAWP :)\n\nBLUE - Solo's autononomous win point.", blue_sawp),
-      Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
       Auton("BLUE SIX RING :)\n\nBLUE - Gets six ring(hopefully)", blue_six_ring),
       Auton("BLUE MOGO disrupt\n\nBLUE - disrupts the thirds mogo and scores 3 -save until elims-", blue_mogo_disrupt)
 

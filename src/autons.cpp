@@ -51,7 +51,7 @@ void empty_mogo_constants() {
 void sawp_empty_mogo_constants() {
   chassis.pid_heading_constants_set(6.5, 1, 50);
   chassis.pid_drive_constants_set(7, 0.5, 0);
-  chassis.pid_turn_constants_set(2.5, 0.07, 22, 15);
+  chassis.pid_turn_constants_set(3.5, 0.07, 22, 15);
   chassis.pid_swing_constants_set(10.5, 0.5, 150);
 
 }
@@ -131,62 +131,60 @@ void red_sawp() {
 
   int multiplier = 1;
 
-  chassis.pid_drive_set(-18_in, DRIVE_SPEED/1.125, true);//approaching at full speed
+  chassis.pid_drive_set(-17_in, DRIVE_SPEED/1.125, true);//approaching at full speed
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-6_in, DRIVE_SPEED/4);//slow approach to mogo with 2 inches exccess
+  chassis.pid_drive_set(-8_in, DRIVE_SPEED/4);//slow approach to mogo with 2 inches exccess
   chassis.pid_wait();
   clampCylinder.set_value(!clampCylinder.get_value());
   pros::delay(100);//tune to see how low this can go without sacrificng consistency 
+  chassis.pid_drive_set(1_in, DRIVE_SPEED / 1.5);//reverting the 1 inch excess ahfwofefeo fein
+  chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(140_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
   sawp_empty_mogo_constants();
   intake.move_velocity(600);//preload scored
-  chassis.pid_drive_set(21_in, DRIVE_SPEED, true);//appraoching ring 1
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(3_in, DRIVE_SPEED / 2.05);//slowing to prevent crossover while grabbing 1
+  chassis.pid_drive_set(24_in, DRIVE_SPEED / 2, true);//appraoching ring 1
   pros::delay(100);
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 100_deg * multiplier, SWING_SPEED/1.1, 45);//backing
+  chassis.pid_turn_set(85_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 40_deg * multiplier, SWING_SPEED / 1.5, 20);//1st curve segment towards ring 2
+  chassis.pid_drive_set(10_in, DRIVE_SPEED/3);//fast approach to ring 2
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(LEFT_SWING, 190_deg * multiplier, SWING_SPEED /1.5, 10);//2nd curve segment grabbing ring 2 and adjusing towards 3
-  chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 172_deg * multiplier, SWING_SPEED/2.25, 13.5);//3rd curve segment grabbing ring 3
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(1.5_in, DRIVE_SPEED);//ensuring I grab
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-1.5_in, DRIVE_SPEED);//reversing
-  chassis.pid_wait_quick_chain();
+  pros::delay(100);
   mogo_constants();
-  chassis.pid_swing_set(LEFT_SWING, 90_deg * multiplier, SWING_SPEED, 49);//wide curve to align for crossing field
+  chassis.pid_drive_set(-4_in, DRIVE_SPEED / 1.5);//backup to prevent cross and align bot
+  pros::delay(130);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-40_in, DRIVE_SPEED, true);//crossing through
+  chassis.pid_swing_set(RIGHT_SWING, -8_deg * multiplier, SWING_SPEED, -35);//turning to ring 3 about the right side
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(RIGHT_SWING, 180_deg * multiplier, SWING_SPEED, 24);//curve to drop mogo and angle towards mogo 2
+  chassis.pid_drive_set(10_in, DRIVE_SPEED / 2);//getting ring
+  chassis.pid_wait_quick_chain();
+  pros::delay(180);//giving time to score
+  chassis.pid_turn_set(101_deg * multiplier, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-70_in, DRIVE_SPEED,true);//sigma sigma boy sigma boy sigma boy (crossing field)
   chassis.pid_wait_quick_chain();
   clampCylinder.set_value(!clampCylinder.get_value());
-  chassis.pid_turn_set(0_deg * multiplier, TURN_SPEED);
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-22.5_in, DRIVE_SPEED);//sprinting towards mogo 2
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-6_in, DRIVE_SPEED/3);//slowing approach
-  chassis.pid_wait_quick_chain();
-  clampCylinder.set_value(!clampCylinder.get_value());
-  pros::delay(100);
-  chassis.pid_turn_set(-77.5_deg * multiplier, TURN_SPEED);
-  chassis.pid_wait_quick_chain();
-  chassis.pid_drive_exit_condition_set(20_ms, 3_in, 250_ms, 3_in, 500_ms, 500_ms);
-  chassis.pid_drive_set(20_in, DRIVE_SPEED);
-  chassis.pid_wait_quick_chain();
-  chassis.pid_turn_set(90_deg * multiplier, TURN_SPEED);
+  default_constants();
   pros::delay(150);
-  intake.move_velocity(0);// turn off to stop ring from getting jiggy wit it
+  chassis.pid_turn_set(2_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
-  intake.move_velocity(600);// turn on to score
-  chassis.pid_drive_set(50_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-16_in, DRIVE_SPEED/1.125, true);//approaching at full speed
   chassis.pid_wait_quick_chain();
-  
+  chassis.pid_drive_set(-7_in, DRIVE_SPEED/4);//getting that shit
+  chassis.pid_wait();
+  clampCylinder.set_value(!clampCylinder.get_value());
+  sawp_empty_mogo_constants();
+  pros::delay(100);//tune to see how low this can go without sacrificng consistency
+  chassis.pid_turn_set(-80_deg * multiplier, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(19_in, DRIVE_SPEED);//getting ring 4
+  chassis.pid_wait_quick_chain();
+  pros::delay(150);
+  chassis.pid_turn_set(90_deg * multiplier, TURN_SPEED);//turn to pole
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(36_in, DRIVE_SPEED);//throw that john in reverse
+  chassis.pid_wait_quick_chain();
 }
 
 void red_sawp_minimized() {
