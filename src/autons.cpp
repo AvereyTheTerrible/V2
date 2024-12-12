@@ -11,6 +11,8 @@
 #define MOGO_OFFSET 1_in
 
 
+bool clampState = false;
+
 // These are out of 127
 const int DRIVE_SPEED = 300;
 const int TURN_SPEED = 100;
@@ -65,14 +67,15 @@ void blue_sawp() {
   // The second parameter is max speed the robot will drive at
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
-  isRed = false;
+  // isRed = false;
   int multiplier = -1;
 
   chassis.pid_drive_set(-17_in, DRIVE_SPEED/1.125, true);//approaching at full speed
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-8_in, DRIVE_SPEED/4);//slow approach to mogo with 2 inches exccess
   chassis.pid_wait();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   pros::delay(100);//tune to see how low this can go without sacrificng consistency 
   chassis.pid_drive_set(1_in, DRIVE_SPEED / 1.5);//reverting the 1 inch excess ahfwofefeo fein
   chassis.pid_wait_quick_chain();
@@ -101,7 +104,8 @@ void blue_sawp() {
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-70_in, DRIVE_SPEED,true);//sigma sigma boy sigma boy sigma boy (crossing field)
   chassis.pid_wait_quick_chain();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   default_constants();
   pros::delay(150);
   chassis.pid_turn_set(2_deg * multiplier, TURN_SPEED);
@@ -110,7 +114,8 @@ void blue_sawp() {
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-7_in, DRIVE_SPEED/4);//getting that shit
   chassis.pid_wait();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   sawp_empty_mogo_constants();
   pros::delay(100);//tune to see how low this can go without sacrificng consistency
   chassis.pid_turn_set(-80_deg * multiplier, TURN_SPEED);
@@ -133,14 +138,15 @@ void red_sawp() {
   // The second parameter is max speed the robot will drive at
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
-  isRed = true;
+  // isRed = true;
   int multiplier = 1;
 
   chassis.pid_drive_set(-17_in, DRIVE_SPEED/1.125, true);//approaching at full speed
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-8_in, DRIVE_SPEED/4);//slow approach to mogo with 2 inches exccess
   chassis.pid_wait();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   pros::delay(100);//tune to see how low this can go without sacrificng consistency 
   chassis.pid_drive_set(1_in, DRIVE_SPEED / 1.5);//reverting the 1 inch excess ahfwofefeo fein
   chassis.pid_wait_quick_chain();
@@ -169,7 +175,8 @@ void red_sawp() {
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-70_in, DRIVE_SPEED,true);//sigma sigma boy sigma boy sigma boy (crossing field)
   chassis.pid_wait_quick_chain();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   default_constants();
   pros::delay(150);
   chassis.pid_turn_set(2_deg * multiplier, TURN_SPEED);
@@ -178,7 +185,8 @@ void red_sawp() {
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-7_in, DRIVE_SPEED/4);//getting that shit
   chassis.pid_wait();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   sawp_empty_mogo_constants();
   pros::delay(100);//tune to see how low this can go without sacrificng consistency
   chassis.pid_turn_set(-80_deg * multiplier, TURN_SPEED);
@@ -198,14 +206,15 @@ void red_sawp_minimized() {
   // The second parameter is max speed the robot will drive at
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
-  isRed = true;
+  // isRed = true;
   int multiplier = 1;
 
   chassis.pid_drive_set(-18_in, DRIVE_SPEED/1.125, true);//approaching at full speed
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-6_in, DRIVE_SPEED/4);//slow approach to mogo with 2 inches exccess
   chassis.pid_wait();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   pros::delay(100);//tune to see how low this can go without sacrificng consistency 
   chassis.pid_turn_set(140_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
@@ -237,14 +246,16 @@ void red_sawp_minimized() {
   chassis.pid_wait_quick_chain();
   chassis.pid_swing_set(RIGHT_SWING, 180_deg * multiplier, SWING_SPEED, 24);//curve to drop mogo and angle towards mogo 2
   chassis.pid_wait_quick_chain();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   chassis.pid_turn_set(0_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-22.5_in, DRIVE_SPEED);//sprinting towards mogo 2
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-6_in, DRIVE_SPEED/3);//slowing approach
   chassis.pid_wait_quick_chain();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   pros::delay(100);
   chassis.pid_turn_set(70_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
@@ -262,13 +273,14 @@ void blue_six_ring() {
   // The third parameter is a boolean (true or false) for enabling/disabling a slew at the start of drive motions
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
   int multiplier = -1;
-  isRed = false;
+  // isRed = false;
 
   chassis.pid_drive_set(-17_in, DRIVE_SPEED/1.125, true);//approaching at full speed
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-8_in, DRIVE_SPEED/4);//slow approach to mogo with 2 inches exccess
   chassis.pid_wait();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   pros::delay(100);//tune to see how low this can go without sacrificng consistency 
   chassis.pid_drive_set(1_in, DRIVE_SPEED / 1.5);//reverting the 1 inch excess ahfwofefeo fein
   chassis.pid_wait_quick_chain();
@@ -314,13 +326,14 @@ void red_six_ring() {
   // for slew, only enable it when the drive distance is greater than the slew distance + a few inches
 
   int multiplier = -1;
-  isRed = true;
+  // isRed = true;
 
   chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);//approaching at full speed
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-6_in, DRIVE_SPEED/1.75);//slow approach to mogo with 2 inches exccess
   chassis.pid_wait();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   pros::delay(100);//tune to see how low this can go without sacrificng consistency 
   empty_mogo_constants();
   chassis.pid_drive_set(2_in, DRIVE_SPEED/3, true);//correcting by 2 inches excess
@@ -395,7 +408,7 @@ void red_mogo_disrupt() {
   // The first parameter is the target in degrees
   // The second parameter is max speed the robot will drive at
   int multiplier = 1;
-  isRed = true;
+  // isRed = true;
 
   chassis.pid_drive_set(-28_in, DRIVE_SPEED, true);//approaching 3rd mogo
   chassis.pid_wait_quick_chain();
@@ -410,7 +423,8 @@ void red_mogo_disrupt() {
   chassis.pid_drive_set(-8_in, DRIVE_SPEED/4);
   chassis.pid_wait();
   empty_mogo_constants();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   chassis.pid_drive_set(1.5_in, DRIVE_SPEED/2);
   chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(-88_deg * multiplier, TURN_SPEED);//angling to rings
@@ -438,7 +452,7 @@ void blue_mogo_disrupt() {
   // The first parameter is the target in degrees
   // The second parameter is max speed the robot will drive at
   int multiplier = -1;
-  isRed = false;
+  // isRed = false;
 
   chassis.pid_drive_set(-28_in, DRIVE_SPEED, true);//approaching 3rd mogo
   chassis.pid_wait_quick_chain();
@@ -453,7 +467,8 @@ void blue_mogo_disrupt() {
   chassis.pid_drive_set(-7.5_in, DRIVE_SPEED/4);
   chassis.pid_wait();
   empty_mogo_constants();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   chassis.pid_drive_set(1.5_in, DRIVE_SPEED/2);
   chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(-88_deg * multiplier, TURN_SPEED);//angling to rings
@@ -494,7 +509,8 @@ void third_mogo_elim_red() {
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
   chassis.pid_wait();
-  clampCylinder.set_value(!clampCylinder.get_value());
+  clampCylinder.set_value(!clampState);
+  clampState = !clampState;
   intakeMotors.move_velocity(600);
 }
 ///

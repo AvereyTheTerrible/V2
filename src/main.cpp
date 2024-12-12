@@ -8,8 +8,8 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {11,12,13},     // Left Chassis Ports (negative port will reverse it!)
-    {1,2,3},  // Right Chassis Ports (negative port will reverse it!)*/
+    {-11,-12,13},     // Left Chassis Ports (negative port will reverse it!)
+    {1,2,-3},  // Right Chassis Ports (negative port will reverse it!)*/
     /*{18, -5, 20},
     {-6, -12, 11},*/
     4,      // IMU Port
@@ -118,12 +118,12 @@ void colorSort(){
   double blue = 000;//configured
   while(true){
     if(colorSensor.get_proximity() < 123){
-      if(isRed && (colorSensor.get_rgb().red < colorSensor.get_rgb().blue)){
+      if(/*isRed &&*/ (colorSensor.get_rgb().red < colorSensor.get_rgb().blue)){
         intakeMotors.move_velocity(-600);//stopping
         pros::delay(300);//waiting
         intakeMotors.move_velocity(600);//running
      }
-     if(!isRed && (colorSensor.get_rgb().red > colorSensor.get_rgb().blue)){
+     if(/*!isRed&&*/ (colorSensor.get_rgb().red > colorSensor.get_rgb().blue)){
         intakeMotors.move_velocity(-600);//stopping
         pros::delay(300);//waiting
         intakeMotors.move_velocity(-600);//running
@@ -131,10 +131,7 @@ void colorSort(){
     }
   }
 }
-//function to display color sensor conditions. make sure to do the Avery display stuff
-void colorConditionConfiguration(){
-  pros::Task myTask(printColorConditions);
-}
+
 
 void printColorConditions(){
   while(true){
@@ -151,7 +148,14 @@ void printColorConditions(){
   
 }
 
+//function to display color sensor conditions. make sure to do the Avery display stuff
+void colorConditionConfiguration(){
+  pros::Task myTask(printColorConditions);
+}
+
 void opcontrol() {
+  
+  bool clampState = false;
   // This is preference to what you like to drive on
   pros::motor_brake_mode_e_t driver_preference_brake = MOTOR_BRAKE_HOLD;
 
@@ -192,14 +196,17 @@ void opcontrol() {
       intakeMotors.move_velocity(0);
     
     if (master.get_digital_new_press(DIGITAL_Y))
-      clampCylinder.set_value(!clampCylinder.get_value());
+    {
+      clampCylinder.set_value(!clampState);
+      clampState = !clampState;
+    }
 
     if (master.get_digital_new_press(DIGITAL_RIGHT))
       sweeperCylinder.set_value(!sweeperCylinder.get_value());
 
-    if (master.get_digital_new_press(DIGITAL_A))
+    /*if (master.get_digital_new_press(DIGITAL_A))
       isRed = !isRed;//toggles the color sort. Reminder: initial state is set during auton
-  
+    */
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   
   }
