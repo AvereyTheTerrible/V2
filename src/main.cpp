@@ -8,11 +8,11 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-10, -9, -8, -7},     // Left Chassis Ports (negative port will reverse it!)
-    {20, 19, 18, 17},  // Right Chassis Ports (negative port will reverse it!)*/
+    {11,12,13},     // Left Chassis Ports (negative port will reverse it!)
+    {1,2,3},  // Right Chassis Ports (negative port will reverse it!)*/
     /*{18, -5, 20},
     {-6, -12, 11},*/
-    2,      // IMU Port
+    4,      // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     450);   // Wheel RPM
 
@@ -42,12 +42,11 @@ void initialize() {
 
   // Autonomous Selector using LLEMU blue_six_ring()
   ez::as::auton_selector.autons_add({
-      Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
+          Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
+      Auton("BLUE SIX RING :)\n\nBLUE - Gets six ring(hopefully)", blue_six_ring),
+      Auton("BLUE SAWP :)\n\nBLUE - Solo's autononomous win point.", blue_sawp),
       Auton("RED SIX RING :)\n\nRED - Gets six ring(hopefully)", red_six_ring),
       Auton("RED MOGO disrupt\n\nRED - disrupts the thirds mogo and scores 3 -save until elims-", red_mogo_disrupt),
-      Auton("RED MIN SAWP :)\n\n RED MIN - Solo's autononomous win point.", red_sawp_minimized),
-      Auton("BLUE SAWP :)\n\nBLUE - Solo's autononomous win point.", blue_sawp),
-      Auton("BLUE SIX RING :)\n\nBLUE - Gets six ring(hopefully)", blue_six_ring),
       Auton("BLUE MOGO disrupt\n\nBLUE - disrupts the thirds mogo and scores 3 -save until elims-", blue_mogo_disrupt)
 
   });
@@ -113,6 +112,44 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+void colorSort(){
+  //COnditions for operation
+  double red = 000;//configured
+  double blue = 000;//configured
+  while(true){
+    if(colorSensor.get_proximity() < 123){
+      if(isRed && (colorSensor.get_rgb().red < colorSensor.get_rgb().blue)){
+        intakeMotors.move_velocity(-600);//stopping
+        pros::delay(300);//waiting
+        intakeMotors.move_velocity(600);//running
+     }
+     if(!isRed && (colorSensor.get_rgb().red > colorSensor.get_rgb().blue)){
+        intakeMotors.move_velocity(-600);//stopping
+        pros::delay(300);//waiting
+        intakeMotors.move_velocity(-600);//running
+     }
+    }
+  }
+}
+//function to display color sensor conditions. make sure to do the Avery display stuff
+void colorConditionConfiguration(){
+  pros::Task myTask(printColorConditions);
+}
+
+void printColorConditions(){
+  while(true){
+  pros::c::optical_rgb_s_t rgb_value;
+  rgb_value = colorSensor.get_rgb();
+
+  cout << "BRIGHTNESS: ";
+  cout << colorSensor.get_brightness();
+  cout << "'/n' R: ";
+  cout << rgb_value.red;
+  cout << "'/n' B: ";
+  cout << rgb_value.blue;
+  }
+  
+}
 
 void opcontrol() {
   // This is preference to what you like to drive on
@@ -133,10 +170,7 @@ void opcontrol() {
         chassis.pid_tuner_toggle();
 
       // Trigger the selected autonomous routine
-      if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
-        autonomous();
-        chassis.drive_brake_set(driver_preference_brake);
-      }
+
 
       chassis.pid_tuner_iterate();  // Allow PID Tuner to iterate
     }
@@ -151,11 +185,11 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
     if (master.get_digital(DIGITAL_R1))
-      intake.move_velocity(600);
+      intakeMotors.move_velocity(600);
     else if (master.get_digital(DIGITAL_R2))
-      intake.move_velocity(-600);
+      intakeMotors.move_velocity(-600);
     else 
-      intake.move_velocity(0);
+      intakeMotors.move_velocity(0);
     
     if (master.get_digital_new_press(DIGITAL_Y))
       clampCylinder.set_value(!clampCylinder.get_value());
@@ -164,11 +198,8 @@ void opcontrol() {
       sweeperCylinder.set_value(!sweeperCylinder.get_value());
 
     if (master.get_digital_new_press(DIGITAL_A))
-      intakeCylinder.set_value(!intakeCylinder.get_value());
+      isRed = !isRed;//toggles the color sort. Reminder: initial state is set during auton
   
-    if(master.get_digital_new_press(DIGITAL_B)){
-      //sawp                                                                                                                               ();
-    }
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   
   }

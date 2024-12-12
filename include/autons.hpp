@@ -4,6 +4,8 @@
 
 extern Drive chassis;
 
+bool isRed;
+
 void red_sawp_minimized();
 
 void blue_sawp();
