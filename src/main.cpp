@@ -42,12 +42,13 @@ void initialize() {
 
   // Autonomous Selector using LLEMU blue_six_ring()
   ez::as::auton_selector.autons_add({
-          Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
-      Auton("BLUE SIX RING :)\n\nBLUE - Gets six ring(hopefully)", blue_six_ring),
+      Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
       Auton("BLUE SAWP :)\n\nBLUE - Solo's autononomous win point.", blue_sawp),
       Auton("RED SIX RING :)\n\nRED - Gets six ring(hopefully)", red_six_ring),
+      Auton("BLUE SIX RING :)\n\nBLUE - Gets six ring(hopefully)", blue_six_ring),
       Auton("RED MOGO disrupt\n\nRED - disrupts the thirds mogo and scores 3 -save until elims-", red_mogo_disrupt),
       Auton("BLUE MOGO disrupt\n\nBLUE - disrupts the thirds mogo and scores 3 -save until elims-", blue_mogo_disrupt)
+     
 
   });
 
@@ -156,6 +157,7 @@ void colorConditionConfiguration(){
 void opcontrol() {
   
   bool clampState = false;
+  bool sweeperState = false;
   // This is preference to what you like to drive on
   pros::motor_brake_mode_e_t driver_preference_brake = MOTOR_BRAKE_HOLD;
 
@@ -200,9 +202,9 @@ void opcontrol() {
       clampCylinder.set_value(!clampState);
       clampState = !clampState;
     }
-
     if (master.get_digital_new_press(DIGITAL_RIGHT))
-      sweeperCylinder.set_value(!sweeperCylinder.get_value());
+      sweeperCylinder.set_value(!sweeperState);
+      sweeperState = !sweeperState;
 
     /*if (master.get_digital_new_press(DIGITAL_A))
       isRed = !isRed;//toggles the color sort. Reminder: initial state is set during auton
