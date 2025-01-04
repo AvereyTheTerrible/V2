@@ -8,11 +8,9 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-11,-12,13},     // Left Chassis Ports (negative port will reverse it!)
-    {1,2,-3},  // Right Chassis Ports (negative port will reverse it!)*/
-    /*{18, -5, 20},
-    {-6, -12, 11},*/
-    4,      // IMU Port
+    {-5,-4,-6},     // Left Chassis Ports (negative port will reverse it!)
+    {1,2,3},  // Right Chassis Ports (negative port will reverse it!)*/
+    20,      // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     450);   // Wheel RPM
 
@@ -22,10 +20,20 @@ ez::Drive chassis(
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+
+//code for arm config
+const int heights[3] = {5, 184, 1000};//different lift heights
+int positionIndex = 0;
+bool lockoutState = false;
+std::shared_ptr<AsyncPositionController<double, double>> armControl =
+AsyncPosControllerBuilder().withMotor({11, -13}).build(); //schmobedying up smth vicious
+
+
+
 void initialize() {
   // Print our branding over your terminal :D
   ez::ez_template_print();
-
+  rotationSensor.reset();
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 
   // Configure your chassis controls
@@ -154,8 +162,15 @@ void colorConditionConfiguration(){
   pros::Task myTask(printColorConditions);
 }
 
+void resetArmAfterDelay(){
+  pros::delay(560);//TUNEABLE 
+  armControl->setTarget(heights[1]);//position index has laready been reset by this point
+  lockoutState = false;//this acts as a flag to allow control of the arm to resume once the thread is complete
+}
+
 void opcontrol() {
-  
+
+  int intakeSpeed = 600;
   bool clampState = false;
   bool sweeperState = false;
   // This is preference to what you like to drive on
@@ -191,20 +206,33 @@ void opcontrol() {
     // Put more user control code here!
     // . . .
     if (master.get_digital(DIGITAL_R1))
-      intakeMotors.move_velocity(600);
+      intakeMotors.move_velocity(intakeSpeed);
     else if (master.get_digital(DIGITAL_R2))
-      intakeMotors.move_velocity(-600);
+      intakeMotors.move_velocity(-intakeSpeed);
     else 
       intakeMotors.move_velocity(0);
     
     if (master.get_digital_new_press(DIGITAL_Y))
     {
-      clampCylinder.set_value(!clampState);
+      clampCylinder.set_value(!clampState); 
       clampState = !clampState;
     }
-    if (master.get_digital_new_press(DIGITAL_RIGHT))
-      sweeperCylinder.set_value(!sweeperState);
-      sweeperState = !sweeperState;
+    if (master.get_digital_new_press(DIGITAL_L1) && !lockoutState){
+      intakeSpeed = 250;
+      positionIndex++;
+      armControl->setTarget(heights[positionIndex]);
+        if(positionIndex == 2){//if we are in final stage, reset
+          lockoutState = true;//enter lockout state
+          positionIndex = 1;
+          pros::Task armReseting(resetArmAfterDelay);
+        }
+      }
+    if (master.get_digital_new_press(DIGITAL_L2) && !lockoutState){
+      intakeSpeed = 600;//returning intake to full speed
+      positionIndex = 0; 
+      armControl->setTarget(heights[0]);//resetting arm 
+     }
+    }
 
     /*if (master.get_digital_new_press(DIGITAL_A))
       isRed = !isRed;//toggles the color sort. Reminder: initial state is set during auton
@@ -212,4 +240,3 @@ void opcontrol() {
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   
   }
-}
