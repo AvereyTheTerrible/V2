@@ -22,15 +22,15 @@ ez::Drive chassis(
  */
 
 //code for arm config
-const int heights[3] = {5, 184, 1000};//different lift heights
+const int heights[3] = {5, 185, 1100};//different lift heights
 int positionIndex = 0;
-bool lockoutState = false;
 std::shared_ptr<AsyncPositionController<double, double>> armControl =
 AsyncPosControllerBuilder().withMotor({11, -13}).build(); //schmobedying up smth vicious
 
 
 
 void initialize() {
+
   // Print our branding over your terminal :D
   ez::ez_template_print();
   rotationSensor.reset();
@@ -41,6 +41,9 @@ void initialize() {
   chassis.opcontrol_drive_activebrake_set(0);    // Sets the active brake kP. We recommend ~2.  0 will disable.
   chassis.opcontrol_curve_default_set(0, 0);     // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
+  //setting motors to coast for setup
+  armMotor.set_brake_mode_all(MOTOR_BRAKE_COAST);
+
   // Set the drive to your own constants from autons.cpp!
   default_constants();
 
@@ -50,20 +53,21 @@ void initialize() {
 
   // Autonomous Selector using LLEMU blue_six_ring()
   ez::as::auton_selector.autons_add({
+      Auton("RED_FREEZE!!! :)\n\nRED - FREEZE IVE SEEN THESE PATHS BEFORE", red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE),
       Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
       Auton("BLUE SAWP :)\n\nBLUE - Solo's autononomous win point.", blue_sawp),
       Auton("RED SIX RING :)\n\nRED - Gets six ring(hopefully)", red_six_ring),
       Auton("BLUE SIX RING :)\n\nBLUE - Gets six ring(hopefully)", blue_six_ring),
       Auton("RED MOGO disrupt\n\nRED - disrupts the thirds mogo and scores 3 -save until elims-", red_mogo_disrupt),
-      Auton("BLUE MOGO disrupt\n\nBLUE - disrupts the thirds mogo and scores 3 -save until elims-", blue_mogo_disrupt)
-     
-
+      Auton("BLUE MOGO disrupt\n\nBLUE - disrupts the thirds mogo and scores 3 -save until elims-", blue_mogo_disrupt),
+      Auton("SKILLS :)\n\nSKILLS", singlePointSkill)
   });
 
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
   master.rumble(".");
+  chassis.drive_imu_reset();                  // Reset gyro position to 0
 }
 
 /**
@@ -101,7 +105,7 @@ void competition_initialize() {
  */
 void autonomous() {
   chassis.pid_targets_reset();                // Resets PID targets to 0
-  chassis.drive_imu_reset();                  // Reset gyro position to 0
+  
   chassis.drive_sensor_reset();               // Reset drive sensors to 0
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
 
@@ -162,14 +166,10 @@ void colorConditionConfiguration(){
   pros::Task myTask(printColorConditions);
 }
 
-void resetArmAfterDelay(){
-  pros::delay(560);//TUNEABLE 
-  armControl->setTarget(heights[1]);//position index has laready been reset by this point
-  lockoutState = false;//this acts as a flag to allow control of the arm to resume once the thread is complete
-}
 
 void opcontrol() {
-
+  armMotor.set_brake_mode_all(MOTOR_BRAKE_HOLD);//dont touch or ill touch you
+  armControl->setMaxVelocity(200);//tuneable
   int intakeSpeed = 600;
   bool clampState = false;
   bool sweeperState = false;
@@ -217,20 +217,17 @@ void opcontrol() {
       clampCylinder.set_value(!clampState); 
       clampState = !clampState;
     }
-    if (master.get_digital_new_press(DIGITAL_L1) && !lockoutState){
-      intakeSpeed = 250;
-      positionIndex++;
-      armControl->setTarget(heights[positionIndex]);
-        if(positionIndex == 2){//if we are in final stage, reset
-          lockoutState = true;//enter lockout state
-          positionIndex = 1;
-          pros::Task armReseting(resetArmAfterDelay);
-        }
+    if (master.get_digital_new_press(DIGITAL_L1) && positionIndex != 2){
+        intakeSpeed = 250;
+        positionIndex++;
+        armControl->setTarget(heights[positionIndex]);//raising arm 1 state
       }
-    if (master.get_digital_new_press(DIGITAL_L2) && !lockoutState){
-      intakeSpeed = 600;//returning intake to full speed
-      positionIndex = 0; 
-      armControl->setTarget(heights[0]);//resetting arm 
+    if (master.get_digital_new_press(DIGITAL_L2) && positionIndex != 0){
+      positionIndex--; 
+      armControl->setTarget(heights[positionIndex]);//dropping arm 1 state
+      if(positionIndex == 0){
+        intakeSpeed = 600;
+      }
      }
     }
 
