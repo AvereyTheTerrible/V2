@@ -25,9 +25,9 @@ const int SWING_SPEED = 127;
 ///
 void default_constants() {
   armMotor.set_brake_mode_all(MOTOR_BRAKE_HOLD);//this is important
-
+  
   chassis.pid_heading_constants_set(5.5, 1, 50);
-  chassis.pid_drive_constants_set(6.5, 0, 20);
+  chassis.pid_drive_constants_set(6.3, 0, 20);
   chassis.pid_turn_constants_set(3, 0.05, 22, 15);
   chassis.pid_swing_constants_set(9, 0.5, 150);
 
@@ -69,50 +69,64 @@ void sawp_empty_mogo_constants() {
 void red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
   int multiplier = 1;
 
+
   chassis.pid_heading_constants_set(0, 0, 0);
+
   armControlCopy->setTarget(1100);//score
-  pros::delay(1000);//giving time to score
+  pros::delay(600);//giving time to score
   chassis.pid_drive_set(-14_in, DRIVE_SPEED/1.125);
   armControlCopy->setTarget(0);//reset arm as we drive
   chassis.pid_wait_quick_chain();
-  pros::delay(5000);//TEMP
   chassis.pid_turn_set(0_deg * multiplier, TURN_SPEED);
   chassis.pid_heading_constants_set(5.5, 1, 50);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(-20_in, DRIVE_SPEED/1.125, true);//approaching at full speed
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(-10_in, DRIVE_SPEED/2);//slow approach to mogo with 2 inches exccess
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED/2);//slow approach to mogo with 8 inches exccess
   chassis.pid_wait();
   clampCylinder.set_value(!clampState);
   clampState = !clampState;
-  pros::delay(130);//tune to see how low this can go without sacrificng consistency
-  chassis.pid_drive_set(4_in, DRIVE_SPEED);//reverting the 2 inch excess 
+  pros::delay(40);//tune to see how low this can go without sacrificng consistency
+  chassis.pid_drive_set(4_in, DRIVE_SPEED);//reverting 4 inchES excess 
   chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(144_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
   sawp_empty_mogo_constants();
   intakeMotors.move_velocity(600);//preload scored
-  chassis.pid_drive_set(24_in, DRIVE_SPEED / 2.5, true);//appraoching ring 1
+  chassis.pid_drive_set(21_in, DRIVE_SPEED / 2.5, true);//appraoching ring 1
   pros::delay(130);
   chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(85_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(14_in, DRIVE_SPEED/3.5);//fast approach to ring 2
+  chassis.pid_drive_set(12_in, DRIVE_SPEED/3.5);// approach to ring 2
   chassis.pid_wait_quick_chain();
-  pros::delay(280);
+  pros::delay(120);
   mogo_constants();
-  chassis.pid_drive_set(-11_in, DRIVE_SPEED / 2.5);//backup to prevent align bot(added 1 inch)
+  chassis.pid_drive_set(-9_in, DRIVE_SPEED / 2.5);//backup to prevent align bot(added 1 inch) MARkED
   pros::delay(200);
   chassis.pid_wait_quick_chain();
   chassis.pid_swing_set(RIGHT_SWING, -8_deg * multiplier, SWING_SPEED, -35);//turning to ring 3 about the right side
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(14_in, DRIVE_SPEED / 1.4);//getting ring 3
+  chassis.pid_drive_set(10_in, DRIVE_SPEED / 1.4);//getting ring 3
   chassis.pid_wait_quick_chain();
-  pros::delay(130);//giving time to score
-  chassis.pid_drive_set(-2_in, DRIVE_SPEED);//avoiding blue ring
+  chassis.pid_drive_set(-6_in, DRIVE_SPEED);//avoiding blue ring
   chassis.pid_wait_quick_chain();
-  chassis.pid_turn_set(90_deg * multiplier, TURN_SPEED, true);
+  chassis.pid_turn_set(70_deg * multiplier, TURN_SPEED, true);//angle to wall
   chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(3, DRIVE_SPEED);//manuevering around blue rine
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_set(15_deg * multiplier, TURN_SPEED);//angle to stack/wall
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(45_in, DRIVE_SPEED / 4.5);//approach to stack
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 85_deg * multiplier, SWING_SPEED, -50);//turning to angle the doinker
+  chassis.pid_wait_quick_chain();
+  sweeperCylinder.set_value(!clampState);//deploy doinker
+  sweeperState = !sweeperState;
+  pros::delay(100);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_swing_set(RIGHT_SWING, 10_deg * multiplier, SWING_SPEED, 10);// doinking
+
   
   
 

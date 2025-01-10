@@ -22,7 +22,7 @@ ez::Drive chassis(
  */
 
 //code for arm config
-const int heights[3] = {5, 185, 1100};//different lift heights
+const int heights[3] = {5, 143, 1050};//different lift heights
 int positionIndex = 0;
 std::shared_ptr<AsyncPositionController<double, double>> armControl =
 AsyncPosControllerBuilder().withMotor({11, -13}).build(); //schmobedying up smth vicious
@@ -218,7 +218,7 @@ void opcontrol() {
       clampState = !clampState;
     }
     if (master.get_digital_new_press(DIGITAL_L1) && positionIndex != 2){
-        intakeSpeed = 250;
+        intakeSpeed = 600;
         positionIndex++;
         armControl->setTarget(heights[positionIndex]);//raising arm 1 state
       }
