@@ -7,7 +7,10 @@ extern Drive chassis;
 //bool isRed;
 
 void singlePointSkill();
+
 void red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE();
+void blue_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE();
+
 void red_sawp_minimized();
 
 void blue_sawp();

@@ -22,7 +22,7 @@ ez::Drive chassis(
  */
 
 //code for arm config
-const int heights[3] = {2, 143, 1050};//different lift heights
+const int heights[3] = {2, 163, 1050};//different lift heights
 int positionIndex = 0;
 auto armControl = AsyncPosControllerBuilder().withMotor({11, -13}).build(); //schmobedying up smth vicious
 
@@ -49,9 +49,10 @@ void initialize() {
   // chassis.opcontrol_curve_buttons_left_set(pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT);  // If using tank, only the left side is used.
   // chassis.opcontrol_curve_buttons_right_set(pros::E_CONTROLLER_DIGITAL_Y, pros::E_CONTROLLER_DIGITAL_A);
 
-  // Autonomous Selector using LLEMU blue_six_ring()
+  // Autonomous Selector using LLEMU blue_six_ring() blue_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE()
   ez::as::auton_selector.autons_add({
       Auton("RED_FREEZE!!! :)\n\nRED - FREEZE IVE SEEN THESE PATHS BEFORE", red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE),
+      Auton("BLUE_FREEZE!!! :)\n\nBLUE - FREEZE IVE SEEN THESE PATHS BEFORE", blue_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE),
       Auton("RED SAWP :)\n\nRED - Solo's autononomous win point.", red_sawp),
       Auton("BLUE SAWP :)\n\nBLUE - Solo's autononomous win point.", blue_sawp),
       Auton("RED SIX RING :)\n\nRED - Gets six ring(hopefully)", red_six_ring),
