@@ -1,4 +1,8 @@
 #include "main.h"
+#include "pros/misc.h"
+#include "pros/rtos.h"
+#include "pros/rtos.hpp"
+#include "subsystems.hpp"
 
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -8,9 +12,9 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-5,-4,-6},     // Left Chassis Ports (negative port will reverse it!)
-    {1,2,3},  // Right Chassis Ports (negative port will reverse it!)*/
-    20,      // IMU Port
+    {-1,-4,-5},     // Left Chassis Ports (negative port will reverse it!)
+    {7,8,9},  // Right Chassis Ports (negative port will reverse it!)*/
+    2,      // IMU Port
     2.75,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     450);   // Wheel RPM
 
@@ -22,10 +26,42 @@ ez::Drive chassis(
  */
 
 //code for arm config
-const int heights[3] = {2, 163, 1050};//different lift heights
+const int heights[3] = {0, 82, 520};//different lift heights
 int positionIndex = 0;
-auto armControl = AsyncPosControllerBuilder().withMotor({11, -13}).build(); //schmobedying up smth vicious
+auto armControl = AsyncPosControllerBuilder().withMotor({18, -11}).withGearset(okapi::AbstractMotor::GearsetRatioPair(okapi::AbstractMotor::gearset::green, 36.0 / 24.0)).build(); //schmobedying up smth vicious
 
+void colorSort()
+{
+    //must be conigured to sensor and conditions
+    int blueThreshold = 200;
+    int redThreshold = 11;
+    colorSensor.set_led_pwm(100);
+    while(true)
+    {
+    if(colorSensor.get_hue() >= blueThreshold)
+	  {
+		std::cout << "blue" << '\n';
+		//if the ring is blue and we want red, sort out
+		if(isRed){
+			intakeSpeed = 0;
+			std::cout << "sort-out" << '\n';
+        	pros::delay(200);//waiting
+			intakeSpeed = 600;
+     } 
+	 if(colorSensor.get_hue() <= redThreshold)
+	  {
+		std::cout << "red" << '\n';
+		//if the ring is red and we want blue, sort out
+		if(!isRed){
+			intakeSpeed = 0;
+			std::cout << "sort-out" << '\n';
+        	pros::delay(200);//waiting
+			intakeSpeed = 600;
+     } 
+    } 
+    }
+  }
+}
 
 void initialize() {
 
@@ -111,65 +147,9 @@ void autonomous() {
   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
 }
 
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
-void colorSort(){
-  //COnditions for operation
-  double red = 000;//configured
-  double blue = 000;//configured
-  while(true){
-    if(colorSensor.get_proximity() < 123){
-      if(/*isRed &&*/ (colorSensor.get_rgb().red < colorSensor.get_rgb().blue)){
-        intakeMotors.move_velocity(-600);//stopping
-        pros::delay(300);//waiting
-        intakeMotors.move_velocity(600);//running
-     }
-     if(/*!isRed&&*/ (colorSensor.get_rgb().red > colorSensor.get_rgb().blue)){
-        intakeMotors.move_velocity(-600);//stopping
-        pros::delay(300);//waiting
-        intakeMotors.move_velocity(-600);//running
-     }
-    }
-  }
-}
-
-
-void printColorConditions(){
-  while(true){
-  pros::c::optical_rgb_s_t rgb_value;
-  rgb_value = colorSensor.get_rgb();
-
-  cout << "BRIGHTNESS: ";
-  cout << colorSensor.get_brightness();
-  cout << "'/n' R: ";
-  cout << rgb_value.red;
-  cout << "'/n' B: ";
-  cout << rgb_value.blue;
-  }
-  
-}
-
-//function to display color sensor conditions. make sure to do the Avery display stuff
-void colorConditionConfiguration(){
-  pros::Task myTask(printColorConditions);
-}
-
-
 void opcontrol() {
   armMotor.set_brake_mode_all(MOTOR_BRAKE_HOLD);//dont touch or ill touch you
   armControl->setMaxVelocity(200);//tuneable
-  int intakeSpeed = 600;
   bool clampState = false;
   bool sweeperState = false;
   // This is preference to what you like to drive on
@@ -216,8 +196,14 @@ void opcontrol() {
       clampCylinder.set_value(!clampState); 
       clampState = !clampState;
     }
+
+    if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT))
+    {
+      sweeperCylinder.set_value(!sweeperState);
+      sweeperState = !sweeperState;
+    } 
+
     if (master.get_digital_new_press(DIGITAL_L1) && positionIndex != 2){
-        intakeSpeed = 600;
         positionIndex++;
         armControl->setTarget(heights[positionIndex]);//raising arm 1 state
       }

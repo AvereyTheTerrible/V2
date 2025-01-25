@@ -1,3 +1,4 @@
+#include "autons.hpp"
 #include "main.h"
 //boolean that will be used to track which color to sort out.
 //When true, we sort out blue rings and vice versa
@@ -10,9 +11,15 @@
 
 #define MOGO_OFFSET 1_in
 
-auto armControlCopy = AsyncPosControllerBuilder().withMotor({11, -13}).build(); //schmobedying up smth vicious
+auto armControlCopy = AsyncPosControllerBuilder()
+                                          .withMotor({18, -11})
+                                          .withGearset(okapi::AbstractMotor::GearsetRatioPair(okapi::AbstractMotor::gearset::green, 36.0 / 24.0))
+																					.build(); //schmobedying up smth vicious
 bool clampState = false;
 bool sweeperState = false;
+
+double intakeSpeed = 600;
+bool isRed = false;
 
 // These are out of 127
 const int DRIVE_SPEED = 300;
@@ -23,7 +30,7 @@ const int SWING_SPEED = 127;
 // Constants
 ///
 void default_constants() {
-  armMotor.set_brake_mode_all(MOTOR_BRAKE_HOLD);//this is important
+  armMotor.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);//this is important
   
   chassis.pid_heading_constants_set(5.5, 1, 50);
   chassis.pid_drive_constants_set(6.3, 0, 20);
@@ -66,15 +73,15 @@ void sawp_empty_mogo_constants() {
 }
 
 void red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
+  isRed = true;
   int multiplier = 1;
-
 
   chassis.pid_heading_constants_set(0, 0, 0);
 
-  armControlCopy->setTarget(1200);//score
+  armControlCopy->setTarget(520);//score
   pros::delay(300);
-  intakeMotors.move_velocity(-300);
-  pros::delay(300);//giving time to score
+  intakeMotors.move_velocity(intakeSpeed);
+  pros::delay(400);//giving time to score
   intakeMotors.move_velocity(0);
   chassis.pid_drive_set(-11_in, DRIVE_SPEED/1.125);
   armControlCopy->setTarget(0);//reset arm as we drive
@@ -91,10 +98,10 @@ void red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
   pros::delay(40);//tune to see how low this can go without sacrificng consistency
   chassis.pid_drive_set(6_in, DRIVE_SPEED);//reverting 4 inchES excess 
   chassis.pid_wait_quick_chain();
-  chassis.pid_turn_set(150_deg * multiplier, TURN_SPEED);
+  chassis.pid_turn_set(143 * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
   sawp_empty_mogo_constants();
-  intakeMotors.move_velocity(600);//preload scored
+  intakeMotors.move_velocity(intakeSpeed);//preload scored
   chassis.pid_drive_set(23_in, DRIVE_SPEED / 2.5, true);//appraoching ring 1
   pros::delay(130);
   chassis.pid_wait_quick_chain();
@@ -116,7 +123,7 @@ void red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
   chassis.pid_turn_set(-90_deg, TURN_SPEED, true);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(20_in, DRIVE_SPEED, true);
-  armControlCopy->setTarget(635);
+  armControlCopy->setTarget(200);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(7_in, DRIVE_SPEED/3);
   
@@ -142,12 +149,13 @@ void red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
 }
 
 void blue_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
+  isRed = false;
   int multiplier = -1;
 
 
   chassis.pid_heading_constants_set(0, 0, 0);
 
-  armControlCopy->setTarget(1200);//score
+  armControlCopy->setTarget(520);//score
   pros::delay(300);
   intakeMotors.move_velocity(-300);
   pros::delay(300);//giving time to score
@@ -167,7 +175,7 @@ void blue_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
   pros::delay(40);//tune to see how low this can go without sacrificng consistency
   chassis.pid_drive_set(6_in, DRIVE_SPEED);//reverting 4 inchES excess 
   chassis.pid_wait_quick_chain();
-  chassis.pid_turn_set(150_deg * multiplier, TURN_SPEED);
+  chassis.pid_turn_set(148_deg * multiplier, TURN_SPEED);
   chassis.pid_wait_quick_chain();
   sawp_empty_mogo_constants();
   intakeMotors.move_velocity(600);//preload scored
@@ -176,7 +184,7 @@ void blue_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
   chassis.pid_wait_quick_chain();
   chassis.pid_turn_set(94_deg * multiplier, TURN_SPEED, true);
   chassis.pid_wait_quick_chain();
-  chassis.pid_drive_set(9_in, DRIVE_SPEED/8);// approach to ring 2
+  chassis.pid_drive_set(12_in, DRIVE_SPEED/8);// approach to ring 2
   chassis.pid_wait_quick_chain();
   pros::delay(120);
   mogo_constants();
@@ -192,7 +200,7 @@ void blue_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE(){
   chassis.pid_turn_set(-90_deg * multiplier, TURN_SPEED, true);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(20_in, DRIVE_SPEED, true);
-  armControlCopy->setTarget(635);
+  armControlCopy->setTarget(200);
   chassis.pid_wait_quick_chain();
   chassis.pid_drive_set(6_in, DRIVE_SPEED/3);
 }

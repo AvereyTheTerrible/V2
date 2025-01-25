@@ -421,7 +421,9 @@
       }
     },
     "upload_options": {
-      "description": "V2 "
+      "description": "V2 ",
+      "slot": 2,
+      "icon": "pizza"
     },
     "use_early_access": false
   }

@@ -4,7 +4,9 @@
 
 extern Drive chassis;
 
-//bool isRed;
+extern bool isRed;
+
+extern double intakeSpeed;
 
 void singlePointSkill();
 
