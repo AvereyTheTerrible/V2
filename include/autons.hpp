@@ -8,10 +8,16 @@ extern bool isRed;
 
 extern double intakeSpeed;
 
-void singlePointSkill();
 
+extern pros::Optical colorSensor;
+
+void skills();
+
+void ringrush_SAWP();
+void blueRingRush();
 void red_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE();
 void blue_FREEZE_IVE_SEEN_THESE_PATHS_BEFORE();
+
 
 void red_sawp_minimized();
 

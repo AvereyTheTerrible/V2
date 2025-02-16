@@ -13,5 +13,4 @@ inline pros::MotorGroup armMotor{11, -13};
 inline pros::ADIDigitalOut clampCylinder('H');
 inline pros::ADIDigitalOut sweeperCylinder('G');
 
-inline pros::Optical colorSensor(19);
 inline pros::Rotation rotationSensor(12);
